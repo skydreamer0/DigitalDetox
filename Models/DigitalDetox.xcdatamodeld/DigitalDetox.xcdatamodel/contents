@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23C71" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <!-- 使用記錄 -->
+    <entity name="UsageRecord" representedClassName=".UsageRecord" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="appId" optional="NO" attributeType="String"/>
+        <attribute name="appName" optional="NO" attributeType="String"/>
+        <attribute name="category" optional="NO" attributeType="String"/>
+        <attribute name="date" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isOverLimit" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="lastUpdated" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="notifications" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UsageNotification" inverseName="usageRecord" inverseEntity="UsageNotification"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="usageRecords" inverseEntity="User"/>
+    </entity>
+
+    <!-- 使用限制 - P1 功能 -->
+    <entity name="UsageLimit" representedClassName=".UsageLimit" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="category" optional="NO" attributeType="String"/>
+        <attribute name="dailyLimit" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isActive" optional="NO" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="usageLimits" inverseEntity="User"/>
+    </entity>
+
+    <!-- 通知記錄 - P0 核心功能 -->
+    <entity name="UsageNotification" representedClassName="UsageNotification" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" optional="NO" attributeType="String"/>
+        <attribute name="message" optional="NO" attributeType="String"/>
+        <attribute name="timestamp" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isRead" optional="NO" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <relationship name="usageRecord" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UsageRecord" inverseName="notifications" inverseEntity="UsageRecord"/>
+    </entity>
+
+    <!-- 用戶資料 - P0 核心功能 -->
+    <entity name="User" representedClassName=".User" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="username" optional="NO" attributeType="String"/>
+        <attribute name="dailyLimit" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="coralBalance" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastLoginAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="usageRecords" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UsageRecord" inverseName="user" inverseEntity="UsageRecord"/>
+        <relationship name="usageLimits" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UsageLimit" inverseName="user" inverseEntity="UsageLimit"/>
+        <relationship name="breathingRecords" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="BreathingRecord" inverseName="user" inverseEntity="BreathingRecord"/>
+        <relationship name="purchases" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Purchase" inverseName="user" inverseEntity="Purchase"/>
+        <relationship name="achievements" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Achievement" inverseName="user" inverseEntity="Achievement"/>
+    </entity>
+
+    <!-- 呼吸記錄 -->
+    <entity name="BreathingRecord" representedClassName=".BreathingRecord" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="startTime" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="endTime" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="patternName" optional="NO" attributeType="String"/>
+        <attribute name="completedCycles" optional="NO" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totalDuration" optional="NO" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="breathingRecords" inverseEntity="User"/>
+    </entity>
+
+    <entity name="Purchase" representedClassName=".Purchase" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="itemName" optional="NO" attributeType="String"/>
+        <attribute name="price" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="purchaseDate" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="purchases" inverseEntity="User"/>
+    </entity>
+
+    <entity name="Achievement" representedClassName=".Achievement" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="NO" attributeType="String"/>
+        <attribute name="achievementDescription" optional="NO" attributeType="String"/>
+        <attribute name="unlockedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="coralReward" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="achievements" inverseEntity="User"/>
+    </entity>
+</model> 

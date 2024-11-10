@@ -1,0 +1,66 @@
+# Xcode
+## 使用者設定
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+## 建置產生的文件
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## 其他
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# 系統文件
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# 自動產生的文件
+*.generated.swift
+
+# 敏感資訊
+Keys.plist
+Secrets.swift
+GoogleService-Info.plist
+
+# 測試覆蓋率報告
+coverage.xml
+*.coverage
+*.xcresult
+
+# 暫存文件
+*.log
+*.tmp
