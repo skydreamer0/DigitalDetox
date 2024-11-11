@@ -33,9 +33,15 @@ DigitalDetox 是一款專注於幫助用戶管理數位使用時間的 iOS 應�
   - [x] 循環次數追蹤
 - **視覺設計**：整合海洋主題動畫效果
 - **音頻系統**：
-  - [x] 背景白噪音（ocean_waves）支持
+  - [x] 多種背景音樂選項
+    - Forest Dawn
+    - Sacred Flame
+    - Zen Rain
+    - Singing Bowl
+  - [x] 音樂切換介面
   - [x] 音量控制
   - [x] 自動暫停/恢復功能
+  - [x] 音樂選擇記憶功能
 
 ---
 
@@ -155,5 +161,12 @@ DigitalDetox 是一款專注於幫助用戶管理數位使用時間的 iOS 應�
    - [x] BreatheAudioService 白噪音管理
    - [x] 音頻會話配置
    - [x] 背景音樂控制
+   - [x] 多種背景音樂管理
+     - Forest Dawn
+     - Sacred Flame
+     - Zen Rain
+     - Singing Bowl
+   - [x] 音樂切換功能
+   - [x] 播放控制優化
 
 ---
