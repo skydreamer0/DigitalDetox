@@ -36,14 +36,15 @@
 
 6. 音頻系統
    - [x] BreatheAudioService 實現
-   - [x] 呼吸引導音效
-   - [x] 背景音樂支持
-   - [x] 音量控制
+   - [x] 背景白噪音支持
+   - [x] 音量控制（0.3 預設音量）
+   - [x] 自動暫停/恢復功能
+   - [ ] ~~呼吸引導音效~~ (暫不實現)
 
 7. 數據持久化
-   - [x] Core Data 模型設計
-   - [x] 呼吸記錄存儲
-   - [x] 練習歷史查詢
+   - [x] 呼吸模式定義
+   - [x] 會話狀態管理
+   - [ ] 練習記錄存儲
 
 ## 技術實現
 
@@ -56,16 +57,30 @@
    - AnimatedTimeView: 計時器動畫
 
 2. ViewModels
-   - BreatheViewModel: 狀態管理與業務邏輯
+   - BreatheViewModel:
+     - [x] 完整的狀態管理
+     - [x] 呼吸階段控制
+     - [x] 進度追蹤
+     - [x] 循環計數
+     - [x] 音頻整合
 
 3. Models
-   - BreathingPhase: 呼吸階段枚舉
-   - BreathingPattern: 呼吸模式結構
-   - BreathingSession: 會話管理結構
-   - BreathingRecord: Core Data 實體
+   - BreathingPhase:
+     - [x] 四個階段定義（吸氣、屏息、呼氣、休息）
+     - [x] 本地化文字
+   - BreathingPattern:
+     - [x] 三種預設模式
+     - [x] 完整參數配置
+   - BreathingSession:
+     - [x] 會話狀態追蹤
+     - [x] 進度管理
 
 4. Services
-   - BreatheAudioService: 音頻管理服務
+   - BreatheAudioService:
+     - [x] 背景白噪音播放
+     - [x] 音頻會話管理
+     - [x] 音量控制
+     - [x] 播放狀態管理
 
 ### 設計特點
 1. MVVM 架構

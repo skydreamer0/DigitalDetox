@@ -1,3 +1,6 @@
+// BreathingRecord.swift
+//檔案位置: Features/Breathing/Models/BreathingRecord.swift
+//功能：定義呼吸記錄的結構
 import Foundation
 import CoreData
 

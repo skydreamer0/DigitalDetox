@@ -1,75 +1,82 @@
 import SwiftUI
 
 struct BreatheGuideView: View {
-    @Binding var currentPhase: BreathingPhase
-    let pattern: BreathingPattern
+    @State private var selectedPattern: BreathingPattern = .defaultPattern
+    @State private var showBreatheView = false
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text(currentPhase.rawValue)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-            
-            Text(guideText)
-                .font(.body)
-                .foregroundColor(.white.opacity(0.8))
-                .multilineTextAlignment(.center)
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(BreathingPattern.allPatterns, id: \.name) { pattern in
+                        PatternCard(
+                            pattern: pattern,
+                            isSelected: selectedPattern.name == pattern.name
+                        ) {
+                            withAnimation {
+                                selectedPattern = pattern
+                                showBreatheView = true
+                            }
+                        }
+                    }
+                }
                 .padding()
-            
-            PhaseProgressView(phase: currentPhase, pattern: pattern)
+            }
+            .oceanBackground()
+            .navigationBarSetup(title: "Ocean Breeze")
         }
-        .frame(maxWidth: .infinity)
-        .background(
-            Color.clear
-        )
-    }
-    
-    private var guideText: String {
-        switch currentPhase {
-        case .inhale:
-            return "緩慢吸氣，感受空氣流入"
-        case .hold:
-            return "保持呼吸，保持平靜"
-        case .exhale:
-            return "緩慢呼氣，釋放壓力"
-        case .rest:
-            return "休息片刻，準備下一輪"
+        .fullScreenCover(isPresented: $showBreatheView) {
+            BreatheView(selectedPattern: selectedPattern)
         }
     }
 }
 
-struct PhaseProgressView: View {
-    let phase: BreathingPhase
+// 呼吸模式卡片組件
+private struct PatternCard: View {
     let pattern: BreathingPattern
+    let isSelected: Bool
+    let action: () -> Void
     
     var body: some View {
-        // 實現進度指示器
-        Circle()
-            .stroke(Color.white.opacity(0.2), lineWidth: 4)
-            .overlay(
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(Color.white, lineWidth: 4)
-                    .rotationEffect(.degrees(-90))
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(pattern.name)
+                        .font(.headline)
+                        .foregroundColor(Color.oceanTheme.textPrimary)
+                    
+                    Spacer()
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(Color.oceanTheme.coral)
+                    }
+                }
+                
+                Text(pattern.description)
+                    .font(.subheadline)
+                    .foregroundColor(Color.oceanTheme.textSecondary)
+                
+                Text("\(Int(pattern.inhaleTime))-\(Int(pattern.holdTime))-\(Int(pattern.exhaleTime)) • \(pattern.cycles) 循環")
+                    .font(.caption)
+                    .foregroundColor(Color.oceanTheme.coral)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.oceanTheme.deepBlue.opacity(0.6))
             )
-            .frame(width: 100, height: 100)
-    }
-    
-    private var progress: Double {
-        // 根據當前階段計算進度
-        switch phase {
-        case .inhale:
-            return pattern.inhaleTime / totalTime
-        case .hold:
-            return pattern.holdTime / totalTime
-        case .exhale:
-            return pattern.exhaleTime / totalTime
-        case .rest:
-            return 0
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(
+                        isSelected ? Color.oceanTheme.coral : Color.clear,
+                        lineWidth: 2
+                    )
+            )
         }
     }
-    
-    private var totalTime: Double {
-        pattern.inhaleTime + pattern.holdTime + pattern.exhaleTime
-    }
-} 
+}
+
+#Preview {
+    BreatheGuideView()
+}

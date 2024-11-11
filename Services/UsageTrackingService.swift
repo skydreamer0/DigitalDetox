@@ -7,6 +7,7 @@ class UsageTrackingService: ObservableObject {
     @Published var dailyUsage: [String: TimeInterval] = [:]
     private var timer: Timer?
     private var currentAppStartTime: Date?
+    private let dataStorageService = DataStorageService.shared
     
     private init() {
         setupTracking()
@@ -27,16 +28,22 @@ class UsageTrackingService: ObservableObject {
         let duration = Date().timeIntervalSince(startTime)
         let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async(execute: DispatchWorkItem(block: { [weak self] in
+            guard let self = self else { return }
             self.dailyUsage[bundleId] = duration
             self.checkAndNotifyIfNeeded()
             
             // 保存使用記錄
-            DigitalDetoxModel.shared.saveUsageTime(
-                appName: Bundle.main.infoDictionary?[kCFBundleNameKey as String] as? String ?? "Unknown",
-                duration: duration
-            )
-        }
+            if let currentUser = PersistenceController.shared.currentUser,
+               let userId = currentUser.id {  // 安全解包 UUID
+                let usageData = UsageData(
+                    appId: bundleId,
+                    duration: duration,
+                    category: .productivity // 這裡可以根據實際需求設置類別
+                )
+                self.dataStorageService.saveUsageData(usageData, for: userId)
+            }
+        }))
     }
     
     func startTracking() {

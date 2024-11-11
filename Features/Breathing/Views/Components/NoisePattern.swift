@@ -1,5 +1,14 @@
+//  NoisePattern.swift
+//  Breathing
+//  該檔案為深呼吸介面動畫視圖。
+//  動畫為噪音圖案，用於模擬呼吸時的噪音圖案效果。
+//  運用於深呼吸介面中。
+//  Created by  on 2024/11.
+//  
+
 import SwiftUI
 
+// MARK: - 噪音圖案
 struct NoisePattern: View {
     @State private var phase = 0.0
     

@@ -1,6 +1,9 @@
+// BreathingModels.swift
+//檔案位置: Features/Breathing/Models/BreathingModels.swift
+//功能：定義呼吸模式和呼吸會話的結構
 import Foundation
 
-// 呼吸階段枚舉
+// Breathing phase enumeration
 enum BreathingPhase: String {
     case inhale = "Inhale"
     case hold = "Hold"
@@ -8,8 +11,8 @@ enum BreathingPhase: String {
     case rest = "Rest"
 }
 
-// 呼吸模式結構
-struct BreathingPattern {
+// Breathing pattern structure
+struct BreathingPattern: Equatable {
     let name: String
     let description: String
     let inhaleTime: TimeInterval
@@ -17,56 +20,52 @@ struct BreathingPattern {
     let exhaleTime: TimeInterval
     let cycles: Int
     
-    // 預設的 4-7-8 模式
+    static func == (lhs: BreathingPattern, rhs: BreathingPattern) -> Bool {
+        return lhs.name == rhs.name &&
+               lhs.description == rhs.description &&
+               lhs.inhaleTime == rhs.inhaleTime &&
+               lhs.holdTime == rhs.holdTime &&
+               lhs.exhaleTime == rhs.exhaleTime &&
+               lhs.cycles == rhs.cycles
+    }
+    
     static let defaultPattern = BreathingPattern(
-        name: "4-7-8 Relaxing Breath",
-        description: "Helps with relaxation and sleep",
+        name: "4-7-8 Relaxation Breath",
+        description: "A breathing pattern that helps with relaxation and sleep",
         inhaleTime: 4,
         holdTime: 7,
         exhaleTime: 8,
         cycles: 4
     )
     
-    // 添加預設模式
     static let focusPattern = BreathingPattern(
         name: "4-4-4 Focus Breath",
-        description: "Enhances concentration and focus",
+        description: "A breathing pattern to enhance concentration",
         inhaleTime: 4,
         holdTime: 4,
         exhaleTime: 4,
-        cycles: 4
+        cycles: 6
     )
     
     static let sleepPattern = BreathingPattern(
         name: "5-8-9 Sleep Breath",
-        description: "Promotes better sleep",
+        description: "Deep relaxation breathing pattern for better sleep",
         inhaleTime: 5,
         holdTime: 8,
         exhaleTime: 9,
         cycles: 3
     )
     
-    // 自定義模式建構器
-    static func custom(
-        name: String,
-        description: String,
-        inhaleTime: TimeInterval,
-        holdTime: TimeInterval,
-        exhaleTime: TimeInterval,
-        cycles: Int
-    ) -> BreathingPattern {
-        BreathingPattern(
-            name: name,
-            description: description,
-            inhaleTime: inhaleTime,
-            holdTime: holdTime,
-            exhaleTime: exhaleTime,
-            cycles: cycles
-        )
+    static var allPatterns: [BreathingPattern] {
+        return [
+            .defaultPattern,
+            .focusPattern,
+            .sleepPattern
+        ]
     }
 }
 
-// 呼吸會話結構
+// Breathing session structure
 struct BreathingSession {
     let pattern: BreathingPattern
     let startTime: Date

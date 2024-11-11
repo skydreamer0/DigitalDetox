@@ -1,5 +1,14 @@
+//  BubbleEffect.swift
+//  Breathing
+//  該檔案為深呼吸介面動畫視圖，用於模擬深呼吸介面動畫效果。
+//  動畫為氣泡效果，用於模擬呼吸時的氣泡效果。
+//  運用於深呼吸介面中。
+//  Created by  on 2024/11.
+//  
+
 import SwiftUI
 
+// MARK: - 氣泡效果
 struct BubbleEffect: View {
     let bubbleCount = 20
     @State private var isAnimating = false

@@ -1,147 +1,167 @@
+//  BreatheAnimationView.swift
+//  Breathing
+//  動畫效果為整體動畫，包含波浪、呼吸環、氣泡等效果。
+//  運用於深呼吸介面中。
+//  Created by  on 2024/11.
+//  
+
 import SwiftUI
 
 struct BreatheAnimationView: View {
     let phase: BreathingPhase
     let isBreathing: Bool
-    
-    @State private var rotation: Double = 0
-    @State private var scale: CGFloat = 1
-    @State private var waveOffset: CGFloat = 0
+    let progress: CGFloat
+    let timeRemaining: TimeInterval
+    let onStart: () -> Void
+    let onPause: () -> Void
+    let onStop: () -> Void
+    @State private var showMusicPicker = false
+    @StateObject private var audioService = BreatheAudioService.shared
     
     var body: some View {
         ZStack {
-            // 深層海水背景
-            DeepOceanBackground()
+            // 確保背景完全覆蓋
+            OceanThemeComponents.DeepOceanBackground()
+                .ignoresSafeArea(edges: .all)
             
-            // 動態波浪層
-            WaveLayers(isAnimating: isBreathing)
-            
-            // 光線效果
-            LightRaysEffect(isAnimating: isBreathing)
-            
-            // 主要呼吸圓環
-            BreathingCircle(phase: phase, scale: scale)
-                .rotationEffect(.degrees(rotation))
-                .overlay(
-                    // 漣漪效果
-                    RippleEffect(isAnimating: isBreathing)
+            // 波浪效果
+            OceanWaveView()
+                .scaleEffect(isBreathing ? 1.1 : 1.0)
+                .animation(
+                    .easeInOut(duration: 2)
+                    .repeatForever(autoreverses: true),
+                    value: isBreathing
                 )
+                .ignoresSafeArea(edges: .bottom)
             
-            // 氣泡群
-            BubbleCluster(isBreathing: isBreathing)
-        }
-        .onChange(of: isBreathing) { oldValue, newValue in
-            withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
-                scale = newValue ? 1.2 : 1.0
-                rotation = newValue ? 360 : 0
-            }
-        }
-    }
-}
-
-// 深層海水背景
-struct DeepOceanBackground: View {
-    var body: some View {
-        LinearGradient(
-            gradient: Gradient(colors: [
-                Color(hex: "0A2342"),  // 深海藍
-                Color(hex: "126872"),  // 中層藍綠
-                Color(hex: "2AA5A5").opacity(0.6)  // 淺層藍綠
-            ]),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .overlay(
-            NoisePattern()
-                .opacity(0.05)
-        )
-    }
-}
-
-// 波浪層效果
-struct WaveLayers: View {
-    let isAnimating: Bool
-    @State private var phase: CGFloat = 0
-    
-    var body: some View {
-        ZStack {
-            ForEach(0..<3) { i in
-                WaveShape(frequency: Double(i + 1) * 2, amplitude: 10)
-                    .fill(Color.oceanTheme.lightBlue.opacity(0.1 - Double(i) * 0.02))
-                    .offset(x: phase * CGFloat(i + 1) * 20)
-            }
-        }
-        .onAppear {
-            withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
-                phase = 1
-            }
-        }
-    }
-}
-
-// 光線效果
-struct LightRaysEffect: View {
-    let isAnimating: Bool
-    @State private var rotation = 0.0
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ForEach(0..<8) { i in
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                .white.opacity(0.2),
-                                .white.opacity(0)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 2, height: geometry.size.height * 0.7)
-                    .rotationEffect(.degrees(Double(i) * 45 + rotation))
-                    .offset(y: -geometry.size.height * 0.2)
+            VStack {
+                Spacer()
+                
+                // 呼吸圓環
+                BreathingCircle(
+                    phase: phase,
+                    progress: progress
+                )
+                
+                Spacer()
+                    .frame(height: 100)
+                
+                // 控制按鈕和音樂名稱
+                VStack(spacing: 16) {
+                    // 控制按鈕
+                    HStack(spacing: 40) {
+                        if isBreathing {
+                            Button(action: onPause) {
+                                Image(systemName: "pause.circle.fill")
+                                    .resizable()
+                                    .frame(width: 60, height: 60)
+                                    .foregroundColor(Color.oceanTheme.coral)
+                            }
+                        } else {
+                            Button(action: onStart) {
+                                Image(systemName: "play.circle.fill")
+                                    .resizable()
+                                    .frame(width: 60, height: 60)
+                                    .foregroundColor(Color.oceanTheme.coral)
+                            }
+                        }
+                        
+                        // 音樂切換按鈕 - 使用與其他按鈕相同的風格
+                        Button(action: { showMusicPicker = true }) {
+                            Image(systemName: "headphones.circle.fill")
+                                .resizable()
+                                .frame(width: 60, height: 60)
+                                .foregroundColor(Color.oceanTheme.lightBlue)
+                        }
+                        
+                        Button(action: onStop) {
+                            Image(systemName: "stop.circle.fill")
+                                .resizable()
+                                .frame(width: 60, height: 60)
+                                .foregroundColor(Color.oceanTheme.lightBlue)
+                        }
+                    }
+                    
+                    // 當前音樂名稱顯示 - 移到按鈕下方
+                    if let currentMusic = audioService.currentMusic {
+                        Text(currentMusic.name)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(Color.oceanTheme.lightBlue)
+                    }
+                }
+                .padding(.bottom, 50)
+                
+                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
-                    rotation = 360
+            
+            // 氣泡效果
+            OceanThemeComponents.BubbleCluster(isAnimating: isBreathing)
+                .ignoresSafeArea(edges: .bottom)
+        }
+        .background(Color(UIColor.systemBackground))
+        .ignoresSafeArea(edges: .all)
+        .sheet(isPresented: $showMusicPicker) {
+            MusicPickerView(audioService: audioService)
+        }
+    }
+}
+
+// 音樂選擇器視圖
+struct MusicPickerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var audioService: BreatheAudioService
+    
+    var body: some View {
+        NavigationView {
+            List(audioService.musicOptions) { option in
+                Button(action: {
+                    audioService.playMusic(option)
+                    dismiss()
+                }) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(option.name)
+                                .font(.headline)
+                                .foregroundColor(Color.oceanTheme.textPrimary)
+                            
+                            Spacer()
+                            
+                            if option.name == audioService.currentMusic?.name {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(Color.oceanTheme.coral)
+                            }
+                        }
+                        
+                        Text(option.description)
+                            .font(.caption)
+                            .foregroundColor(Color.oceanTheme.textSecondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+            .navigationTitle("選擇背景音樂")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("關閉") {
+                        dismiss()
+                    }
                 }
             }
         }
+        .oceanBackground()
     }
 }
 
-// 漣漪效果
-struct RippleEffect: View {
-    let isAnimating: Bool
-    @State private var scale: CGFloat = 1
-    @State private var opacity: Double = 0
-    
-    var body: some View {
-        ZStack {
-            ForEach(0..<3) { i in
-                Circle()
-                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                    .scaleEffect(scale + CGFloat(i) * 0.1)
-                    .opacity(opacity)
-            }
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: false)) {
-                scale = 1.5
-                opacity = 0
-            }
-        }
-    }
-}
-
-// 氣泡群
-struct BubbleCluster: View {
-    let isBreathing: Bool
-    
-    var body: some View {
-        BubbleEffect()
-            .opacity(isBreathing ? 1 : 0.3)
-    }
+#Preview {
+    BreatheAnimationView(
+        phase: .inhale,
+        isBreathing: true,
+        progress: 0.5,
+        timeRemaining: 10,
+        onStart: {},
+        onPause: {},
+        onStop: {}
+    )
 } 
