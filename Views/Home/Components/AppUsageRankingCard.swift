@@ -1,46 +1,18 @@
 import SwiftUI
 
 struct AppUsageRankingCard: View {
-    var body: some View {
-        VStack(spacing: 15) {
-            HStack {
-                Image(systemName: "list.number")
-                    .foregroundColor(Color.oceanTheme.coral)
-                Text("App Usage Ranking")
-                    .font(.headline)
-                    .foregroundColor(Color.oceanTheme.textPrimary)
-                Spacer()
-            }
-            
-            ForEach(0..<3) { index in
-                AppRankingRow(rank: index + 1)
-            }
-        }
-        .padding()
-        .cardStyle()
-    }
-}
-
-private struct AppRankingRow: View {
-    let rank: Int
+    @EnvironmentObject private var themeService: ThemeService
     
     var body: some View {
-        HStack {
-            Text("\(rank)")
+        VStack(alignment: .leading, spacing: 8) {
+            Text("應用使用排名")
                 .font(.headline)
-                .foregroundColor(Color.oceanTheme.coral)
-                .frame(width: 30)
+                .foregroundColor(themeService.currentTheme.textPrimary)
             
-            Image(systemName: "app")
-                .foregroundColor(Color.oceanTheme.mediumBlue)
-            
-            Text("App Name")
-                .foregroundColor(Color.oceanTheme.textPrimary)
-            
-            Spacer()
-            
-            Text("2h 30m")
-                .foregroundColor(Color.oceanTheme.textSecondary)
+            // 排名列表
         }
+        .padding()
+        .background(themeService.currentTheme.primaryColor.opacity(0.1))
+        .cornerRadius(12)
     }
 } 

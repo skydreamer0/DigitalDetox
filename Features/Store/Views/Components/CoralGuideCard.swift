@@ -1,48 +1,26 @@
 import SwiftUI
 
 struct CoralGuideCard: View {
+    @EnvironmentObject private var themeService: ThemeService
     let guide: CoralGuide
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(guide.title)
-                        .font(.headline)
-                        .foregroundColor(Color.oceanTheme.textPrimary)
-                    
-                    Text(guide.description)
-                        .font(.subheadline)
-                        .foregroundColor(Color.oceanTheme.textSecondary)
-                }
-                
-                Spacer()
-                
-                HStack {
-                    Image(systemName: "dollarsign.circle.fill")
-                        .foregroundColor(Color.oceanTheme.coral)
-                    Text("\(guide.reward)")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.oceanTheme.coral)
-                }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            Text(guide.title)
+                .font(.headline)
+                .foregroundColor(themeService.currentTheme.textPrimary)
             
-            if !guide.requirements.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Requirements")
+            Text(guide.description)
+                .font(.caption)
+                .foregroundColor(themeService.currentTheme.textSecondary)
+            
+            ForEach(guide.requirements, id: \.self) { requirement in
+                HStack {
+                    Image(systemName: guide.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(guide.isCompleted ? themeService.currentTheme.coral : themeService.currentTheme.textSecondary)
+                    Text(requirement)
                         .font(.caption)
-                        .foregroundColor(Color.oceanTheme.textSecondary)
-                    
-                    ForEach(guide.requirements, id: \.self) { requirement in
-                        HStack {
-                            Image(systemName: guide.isCompleted ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(guide.isCompleted ? Color.oceanTheme.coral : Color.oceanTheme.textSecondary)
-                            Text(requirement)
-                                .font(.caption)
-                                .foregroundColor(Color.oceanTheme.textSecondary)
-                        }
-                    }
+                        .foregroundColor(themeService.currentTheme.textSecondary)
                 }
             }
             
@@ -52,16 +30,15 @@ struct CoralGuideCard: View {
                 Text(guide.isCompleted ? "Completed" : "Start Task")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(guide.isCompleted ? Color.oceanTheme.textSecondary : Color.oceanTheme.deepBlue)
+                    .foregroundColor(guide.isCompleted ? themeService.currentTheme.textSecondary : themeService.currentTheme.deepBlue)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(guide.isCompleted ? Color.oceanTheme.deepBlue.opacity(0.3) : Color.oceanTheme.accent)
-                    .cornerRadius(20)
+                    .background(guide.isCompleted ? Color.clear : themeService.currentTheme.coral)
+                    .cornerRadius(8)
             }
-            .disabled(guide.isCompleted)
         }
         .padding()
-        .background(Color.oceanTheme.cardBackground)
+        .background(themeService.currentTheme.primaryColor.opacity(0.1))
         .cornerRadius(12)
     }
 } 

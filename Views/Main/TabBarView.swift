@@ -40,7 +40,7 @@ struct TabBarView: View {
                 }
                 .tag(4)
         }
-        .tint(Color.oceanTheme.accent)
+        .tint(Color.theme.currentTheme.accent)
         .onAppear {
             configureTabBarAppearance()
         }
@@ -51,14 +51,14 @@ struct TabBarView: View {
     
     private func configureTabBarAppearance() {
         let appearance = UITabBarAppearance()
-        appearance.backgroundColor = UIColor(Color.oceanTheme.tabBarBackground)
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.oceanTheme.textSecondary)
+        appearance.backgroundColor = UIColor(Color.theme.currentTheme.tabBarBackground)
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.theme.currentTheme.textSecondary)
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor(Color.oceanTheme.textSecondary)
+            .foregroundColor: UIColor(Color.theme.currentTheme.textSecondary)
         ]
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.oceanTheme.accent)
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.theme.currentTheme.accent)
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: UIColor(Color.oceanTheme.accent)
+            .foregroundColor: UIColor(Color.theme.currentTheme.accent)
         ]
         
         UITabBar.appearance().standardAppearance = appearance

@@ -10,12 +10,13 @@ import SwiftUI
 
 @main
 struct DigitalDetoxApp: App {
-    @StateObject private var themeManager = OceanThemeManager()
+    @StateObject private var themeService = ThemeService.shared
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(themeManager)
+                .environmentObject(themeService)
+                .withTheme()
         }
     }
 }

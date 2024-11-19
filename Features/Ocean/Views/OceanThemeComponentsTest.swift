@@ -1,122 +1,108 @@
 import SwiftUI
 
 struct OceanThemeComponentsTest: View {
-    @StateObject private var themeManager = OceanThemeManager()
+    @EnvironmentObject private var themeService: ThemeService
     @State private var isAnimating = false
-    @State private var breathingPhase: BreathingPhase = .inhale
-    @State private var progress: CGFloat = 0.0
     @State private var scale: CGFloat = 1.0
-    @State private var timeRemaining: TimeInterval = 4.0
-    
-    let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ZStack {
-            // 深海背景
-            OceanThemeComponents.DeepOceanBackground()
+            // 背景
+            themeService.currentTheme.primaryColor
+                .opacity(0.3)
                 .ignoresSafeArea()
             
-            // 波浪效果
-            OceanWaveView()
-                .scaleEffect(scale)
-                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: scale)
-            
-            // 將呼吸圈放在中心
-            ZStack {
-                // 呼吸圈
-                BreathingCircle(
-                    phase: breathingPhase,
-                    progress: progress
-                )
+            // 測試內容
+            VStack(spacing: 30) {
+                // 波浪效果
+                if themeService.currentTheme.hasWaveEffect {
+                    OceanWaveView()
+                        .frame(height: 200)
+                }
                 
                 // 氣泡效果
-                OceanThemeComponents.BubbleCluster(isAnimating: isAnimating)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // 控制按鈕組 - 移到底部
-            VStack {
-                Spacer()
-                
-                HStack(spacing: 20) {
-                    // 開始/暫停按鈕
-                    Button(action: {
-                        withAnimation {
-                            isAnimating.toggle()
-                            if isAnimating {
-                                scale = 1.2
-                            } else {
-                                scale = 1.0
-                            }
-                        }
-                    }) {
-                        Image(systemName: isAnimating ? "pause.circle.fill" : "play.circle.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.white)
-                    }
-                    
-                    // 重置按鈕
-                    Button(action: {
-                        withAnimation {
-                            resetAnimation()
-                        }
-                    }) {
-                        Image(systemName: "arrow.clockwise.circle.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.white)
-                    }
+                if themeService.currentTheme.hasBubbleEffect {
+                    BubbleEffect()
+                        .frame(height: 200)
                 }
-                .padding(.bottom, 50)
+                
+                // 顏色測試
+                ColorTestView(theme: themeService.currentTheme)
+                
+                // 動畫控制
+                AnimationControlView(
+                    isAnimating: $isAnimating,
+                    scale: $scale
+                )
             }
+            .padding()
         }
-        .environmentObject(themeManager)
-        .onReceive(timer) { _ in
-            guard isAnimating else { return }
-            updateProgress()
-        }
-    }
-    
-    private func updateProgress() {
-        withAnimation(.linear(duration: 0.1)) {
-            if progress < 1.0 {
-                progress += 0.01
-                timeRemaining = max(0, 4.0 * (1.0 - Double(progress)))
-            } else {
-                progress = 0.0
-                timeRemaining = 4.0
-                moveToNextPhase()
-            }
-        }
-    }
-    
-    private func moveToNextPhase() {
-        withAnimation {
-            switch breathingPhase {
-            case .inhale:
-                breathingPhase = .hold
-            case .hold:
-                breathingPhase = .exhale
-            case .exhale:
-                breathingPhase = .rest
-            case .rest:
-                breathingPhase = .inhale
-            }
-            timeRemaining = 4.0
-        }
-    }
-    
-    private func resetAnimation() {
-        isAnimating = false
-        breathingPhase = .inhale
-        progress = 0.0
-        scale = 1.0
-        timeRemaining = 4.0
+        .navigationTitle("主題元件測試")
     }
 }
 
-#Preview {
-    OceanThemeComponentsTest()
-        .environmentObject(OceanThemeManager())
+private struct ColorTestView: View {
+    let theme: any ThemeConfigurable
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            Text("顏色測試")
+                .foregroundColor(theme.textPrimary)
+            
+            HStack(spacing: 8) {
+                ColorCircle(color: theme.primaryColor, name: "Primary")
+                ColorCircle(color: theme.secondaryColor, name: "Secondary")
+                ColorCircle(color: theme.accent, name: "Accent")
+                ColorCircle(color: theme.coral, name: "Coral")
+            }
+        }
+    }
+}
+
+private struct ColorCircle: View {
+    let color: Color
+    let name: String
+    
+    var body: some View {
+        VStack {
+            Circle()
+                .fill(color)
+                .frame(width: 30, height: 30)
+            Text(name)
+                .font(.caption)
+        }
+    }
+}
+
+private struct AnimationControlView: View {
+    @Binding var isAnimating: Bool
+    @Binding var scale: CGFloat
+    
+    var body: some View {
+        HStack(spacing: 20) {
+            Button(action: {
+                withAnimation {
+                    isAnimating.toggle()
+                    scale = isAnimating ? 1.2 : 1.0
+                }
+            }) {
+                Image(systemName: isAnimating ? "pause.circle.fill" : "play.circle.fill")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .foregroundColor(.white)
+            }
+            
+            Button(action: {
+                withAnimation {
+                    isAnimating = false
+                    scale = 1.0
+                }
+            }) {
+                Image(systemName: "arrow.clockwise.circle.fill")
+                    .resizable()
+                    .frame(width: 60, height: 60)
+                    .foregroundColor(.white)
+            }
+        }
+    }
 } 

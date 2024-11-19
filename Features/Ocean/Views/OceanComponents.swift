@@ -11,7 +11,6 @@
 
 import SwiftUI
 
-// 將 WavePath 移到外部
 struct WavePath: Shape {
     var offset: CGFloat
     var amplitude: CGFloat

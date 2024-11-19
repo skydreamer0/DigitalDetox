@@ -34,19 +34,19 @@ struct OceanWaveTest: View {
                     
                     ZStack {
                         // 第一層波浪（最底層）
-                        WavePath(offset: waveOffset1, amplitude: amplitude, frequency: frequency)
+                        TestWaveShape(offset: waveOffset1, amplitude: amplitude, frequency: frequency)
                             .fill(Color.blue.opacity(opacity))
                             .frame(width: waveWidth)
                             .offset(x: -waveOffset1)
                         
                         // 第二層波浪（中層）
-                        WavePath(offset: waveOffset2, amplitude: amplitude * 0.8, frequency: frequency * 1.2)
+                        TestWaveShape(offset: waveOffset2, amplitude: amplitude * 0.8, frequency: frequency * 1.2)
                             .fill(Color.blue.opacity(opacity * 0.8))
                             .frame(width: waveWidth)
                             .offset(x: -waveOffset2)
                         
                         // 第三層波浪（最上層）
-                        WavePath(offset: waveOffset3, amplitude: amplitude * 0.6, frequency: frequency * 1.4)
+                        TestWaveShape(offset: waveOffset3, amplitude: amplitude * 0.6, frequency: frequency * 1.4)
                             .fill(Color.blue.opacity(opacity * 0.6))
                             .frame(width: waveWidth)
                             .offset(x: -waveOffset3)

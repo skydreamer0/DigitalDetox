@@ -1,8 +1,6 @@
 import SwiftUI
 
 extension Color {
-    static let oceanTheme = OceanTheme()
-    
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
@@ -27,42 +25,19 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
+    
+    func toHex() -> String {
+        guard let components = cgColor?.components else { return "" }
+        let r = Int(components[0] * 255.0)
+        let g = Int(components[1] * 255.0)
+        let b = Int(components[2] * 255.0)
+        return String(format: "#%02X%02X%02X", r, g, b)
+    }
 }
 
-struct OceanTheme {
-    // 主要顏色
-    let deepBlue = Color(hex: "1B4965")      // 深邃海藍
-    let mediumBlue = Color(hex: "62B6CB")    // 清澈海水藍
-    let lightBlue = Color(hex: "BEE9E8")     // 淺層海藍
-    let accent = Color(hex: "CAE9FF")        // 波光色
-    let coral = Color(hex: "FF9B71")         // 珊瑚色(強調色)
-    
-    // 輔助顏色
-    let textPrimary = Color.white            // 主要文字
-    let textSecondary = Color(hex: "BEE9E8") // 次要文字
-    let divider = Color(hex: "62B6CB")       // 分隔線
-    
-    // 背景漸層
-    var backgroundGradient: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(colors: [deepBlue, mediumBlue.opacity(0.8)]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-    
-    // 卡片背景
-    var cardBackground: Color {
-        deepBlue.opacity(0.3)
-    }
-    
-    // 標籤列背景
-    var tabBarBackground: Color {
-        deepBlue.opacity(0.95)
-    }
-    
-    // 列表背景
-    var listBackground: Color {
-        deepBlue.opacity(0.2)
+// 主題顏色擴展
+extension Color {
+    static var theme: ThemeService {
+        return ThemeService.shared
     }
 } 

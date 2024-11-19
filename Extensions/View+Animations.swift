@@ -53,13 +53,14 @@ struct DataUpdateAnimationModifier: ViewModifier {
 
 // 波紋效果修飾器
 struct RippleEffectModifier: ViewModifier {
+    @EnvironmentObject private var themeService: ThemeService
     @State private var isRippling = false
     
     func body(content: Content) -> some View {
         content
             .overlay(
                 Circle()
-                    .stroke(Color.oceanTheme.accent)
+                    .stroke(themeService.currentTheme.accent)
                     .scaleEffect(isRippling ? 2 : 1)
                     .opacity(isRippling ? 0 : 0.3)
             )
